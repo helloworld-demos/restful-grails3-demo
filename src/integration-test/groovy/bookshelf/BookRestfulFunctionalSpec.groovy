@@ -239,17 +239,19 @@ class BookRestfulFunctionalSpec extends GebSpec {
     }
 
     void "DELETE a non existing book"() {
-        when:
+        given:
             int nonExistingBookId = 100
 
             !Book.exists(nonExistingBookId)
 
+        when:
             def resp = restBuilder().delete("$baseUrl/books/${nonExistingBookId}")
 
         then:
             resp.status == NOT_FOUND.value()
     }
 
+    // PUT can actually just update one attribute
     void "PUT a book"() {
         given:
             String updatedBookName = 'updated book name'
@@ -290,6 +292,19 @@ class BookRestfulFunctionalSpec extends GebSpec {
             resp.json.toString().contains('is less than minimum value')
 
             Book.findById(testBook.id).price == testBook.price
+    }
+
+    void "PUT an non existing book"() {
+        given:
+            int nonExistingBookId = 100
+
+            !Book.exists(nonExistingBookId)
+
+        when:
+            def resp = restBuilder().put("$baseUrl/books/${nonExistingBookId}")
+
+        then:
+            resp.status == NOT_FOUND.value()
     }
 
     RestBuilder restBuilder() {
